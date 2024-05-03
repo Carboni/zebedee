@@ -21,21 +21,18 @@ import java.util.Set;
 public interface PermissionsService {
 
     /**
-     * Return true if the {@link User} is a publisher, false otherwise.
-     *
-     * @param session {@link Session} to get the user details from.
-     * @return true if the {@link User} is a publisher, false otherwise.
-     * @throws IOException unexpected error checking the user permissions.
-     */
-    boolean isPublisher(Session session) throws IOException;
-
-    /**
      * Return true if the {@link User} is an Admin, false otherwise.
      *
      * @param session {@link Session} to get the user details from.
      * @return true if the user is an admin, false otherwise.
      * @throws IOException unexpected error checking the user permissions.
+     *
+     * @deprecated since this method is only used by the users and teams services that will be removed shortly in favour
+     *             of the dp-identity-api and JWT sessions implementation.
+     *
+     * TODO: Remove this method once the JWT session migration is complete.
      */
+    @Deprecated
     boolean isAdministrator(Session session) throws IOException;
 
     /**

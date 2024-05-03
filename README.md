@@ -208,14 +208,55 @@ If this is fails try again after regenerating an override key as it may have exp
 
 #### Service authentication with Zebedee
 
-1) Login to florence using: `curl -X POST -d '{"email":"florence@magicroundabout.ons.gov.uk","password":"<your password>"}' http://localhost:8082/login`
-2) Make a note of the `access_token` that gets returned in the headers
-3) Create an admin service key: `curl -X POST http://localhost:8082/service -H "X-Florence-Token: <access_token>" -d '{"id":"admin"}'`
-4) Make a note of the service token that gets returned in the response body
-5) Set the environment variable:
-`export SERVICE_AUTH_TOKEN=<YOUR_SERVICE_TOKEN>` replacing the token with that one you got in step 4
-6) Restart zebedee and authenticating services
+To generate service auth tokens with zebedee:
 
+1. Install `pwgen`:
+
+   ```shell
+   brew install pwgen
+   ```
+
+2. Create a `<random 64 character string>` that is base 62 \[a-zA-Z0-9\] using:
+
+   ```shell
+   pwgen 64 1
+   ```
+
+   Copy this 64 character string for later step.
+
+3. Open the `services` directory under the zebedee content directory:
+
+   ```shell
+   cd /your/zebedee/root/services
+   ```
+
+4. Create the service token record:
+
+   ```shell
+   sudo echo '{"id":"<service name>"}' > <random 64 character string from step 2>.json
+   ```
+
+5. You can now test the token using:
+
+   ```shell
+   curl -i -X GET <http://localhost:8082/identity> -H "Authorization: Bearer <random 64 character string>"
+   ```
+
+   You should get back something like:
+
+   ```text
+   HTTP/1.1 200 OK
+   Server: nginx
+   Date: Wed, 21 Jul 2021 07:15:34 GMT
+   Content-Type: application/json;charset=utf-8
+   Content-Length: 55
+   Connection: keep-alive
+   Vary: Accept-Encoding, User-Agent
+
+   {"identifier":"<service repo name>"}
+   ```
+
+   where \<service repo name\> is the name of your new service.
 
 [1]: https://github.com/ONSdigital/babbage
 [2]: https://github.com/ONSdigital/florence
@@ -225,8 +266,3 @@ If this is fails try again after regenerating an override key as it may have exp
 [6]: https://github.com/ONSdigital/dp-compose
 [7]: collection-keyring-secrets-generator/README.md
 
-#### SERVICE_AUTH_TOKEN creation for Sandbox/Prod
-
-Please see document in dp-operations:
-
-[dp-operations/guide Generate Service Auth Token](https://github.com/ONSdigital/dp-operations/blob/main/guides/generate-service-auth-token.md)

@@ -38,6 +38,17 @@ public class PermissionsServiceImpl extends JWTPermissionsServiceImpl {
     }
 
     /**
+     * Determines whether the specified user has administator permissions.
+     *
+     * @param session The user's login {@link Session}.
+     * @return <code>true</code> the user is an administrator or <code>false</code> otherwise.
+     */
+    @Override
+    public boolean isAdministrator(Session session) {
+        return session != null && isGroupMember(session, ADMIN_GROUP);
+    }
+
+    /**
      * Determines whether an administator exists.
      *
      * @return True if at least one administrator exists.
@@ -165,8 +176,7 @@ public class PermissionsServiceImpl extends JWTPermissionsServiceImpl {
     @Override
     public PermissionDefinition userPermissions(String email, Session session) throws IOException,
             UnauthorizedException {
-        if ((session == null) ||
-                !(isAdministrator(session) || isPublisher(session) || session.getEmail().equalsIgnoreCase(email))) {
+        if ((session == null) || !(canEdit(session) || session.getEmail().equalsIgnoreCase(email))) {
             throw new UnauthorizedException(getUnauthorizedMessage(session));
         }
 

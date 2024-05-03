@@ -38,7 +38,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +61,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
 import static com.github.onsdigital.zebedee.configuration.CMSFeatureFlags.cmsFeatureFlags;
 import static com.github.onsdigital.zebedee.configuration.Configuration.getUnauthorizedMessage;
@@ -1012,9 +1012,9 @@ public class Collections {
             return false;
         }
 
-        if (!permissionsService.isPublisher(session)) {
+        if (!permissionsService.canEdit(session)) {
             info().user(session)
-                    .reason("publisher permissions required")
+                    .reason("edit permissions required")
                     .log("dataset version validation not bypassed");
             return false;
         }

@@ -338,9 +338,6 @@ public class ZebedeeTest extends ZebedeeTestBaseFixture {
         when(sessions.create(TEST_EMAIL))
                 .thenReturn(userSession);
 
-        when(permissionsService.isAdministrator(any(Session.class)))
-                .thenReturn(true);
-
         Zebedee zebedee = new Zebedee(zebCfg);
 
         // When openSession is called

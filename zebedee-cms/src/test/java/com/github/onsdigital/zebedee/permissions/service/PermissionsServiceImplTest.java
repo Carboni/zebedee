@@ -32,6 +32,7 @@ public class PermissionsServiceImplTest {
 
     private static final String EMAIL = "admin@ons.gov.uk";
     private static final String ADMIN_GROUP = "role-admin";
+    private static final String PUBLISHER_GROUP = "role-publisher";
 
     private Set<String> digitalPublishingTeam = new HashSet<>();
     private Set<String> admins = new HashSet<>();
@@ -56,14 +57,59 @@ public class PermissionsServiceImplTest {
 
         when(session.getEmail())
                 .thenReturn(EMAIL);
+        when(permissionsStore.getAccessMapping())
+                .thenReturn(accessMapping);
 
         permissions = new PermissionsServiceImpl(permissionsStore);
     }
 
+
+    @Test
+    public void isAdministrator_Session_Admin_ShouldReturnTrue() throws Exception {
+        List<String> sessionGroups = new ArrayList<>();
+        sessionGroups.add(ADMIN_GROUP);
+
+        when(session.getGroups())
+                .thenReturn(sessionGroups);
+
+        assertTrue(permissions.isAdministrator(session));
+    }
+
+    @Test
+    public void isAdministrator_Session_Publisher_ShouldReturnFalse() throws Exception {
+        List<String> sessionGroups = new ArrayList<>();
+        sessionGroups.add(PUBLISHER_GROUP);
+
+        when(session.getGroups())
+                .thenReturn(sessionGroups);
+
+        assertFalse(permissions.isAdministrator(session));
+    }
+
+    @Test
+    public void isAdministrator_SessionNull_ShouldReturnFalse() throws Exception {
+        Session session = null;
+        assertFalse(permissions.isAdministrator(session));
+        verifyNoInteractions(permissionsStore);
+    }
+
+    @Test
+    public void isAdministrator_Session_NotAdmin_ShouldReturnFalse() throws Exception {
+        when(session.getGroups())
+                .thenReturn(new ArrayList<>());
+
+        assertFalse(permissions.isAdministrator(session));
+        verifyNoInteractions(permissionsStore);
+    }
+
+    @Test
+    public void isAdministrator_Session_NullGroup_ShouldReturnFalse() throws Exception {
+        assertFalse(permissions.isAdministrator(session));
+        verifyNoInteractions(permissionsStore);
+    }
+
     @Test
     public void hasAdministrator_ShouldReturnFalseIfAdminsIsNull() throws Exception {
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(null);
 
@@ -75,8 +121,6 @@ public class PermissionsServiceImplTest {
 
     @Test
     public void hasAdministrator_ShouldReturnFalseIfAdminsIsEmpty() throws Exception {
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(new HashSet<>());
 
@@ -91,8 +135,6 @@ public class PermissionsServiceImplTest {
         Set<String> admins = new HashSet<>();
         admins.add(EMAIL);
 
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -123,8 +165,6 @@ public class PermissionsServiceImplTest {
     public void removeAdministrator_ShouldThrowExceptionIfUserIsNotAnAdmin() throws Exception {
         when(session.getGroups())
                 .thenReturn(new ArrayList<>());
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(new HashSet<>());
 
@@ -143,8 +183,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getGroups())
                 .thenReturn(sessionGroups);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -175,8 +213,6 @@ public class PermissionsServiceImplTest {
 
     @Test
     public void removeEditor_ShouldThrowExceptionIfUserIsNotAnAdmin() throws Exception {
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getDigitalPublishingTeam())
                 .thenReturn(new HashSet<>());
         when(session.getGroups())
@@ -197,8 +233,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getGroups())
                 .thenReturn(sessionGroups);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getDigitalPublishingTeam())
                 .thenReturn(publishers);
 
@@ -215,8 +249,6 @@ public class PermissionsServiceImplTest {
         Set<String> admins = new HashSet<>();
         admins.add(EMAIL);
 
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -235,8 +267,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getEmail())
                 .thenReturn(null);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -258,8 +288,6 @@ public class PermissionsServiceImplTest {
                 .thenReturn(EMAIL);
         when(session.getGroups())
                 .thenReturn(new ArrayList<>());
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -282,8 +310,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getGroups())
                 .thenReturn(sessionGroups);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -300,8 +326,6 @@ public class PermissionsServiceImplTest {
         Set<String> admins = new HashSet<>();
         admins.add(EMAIL);
 
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -320,8 +344,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getEmail())
                 .thenReturn(null);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -342,8 +364,6 @@ public class PermissionsServiceImplTest {
                 .thenReturn(EMAIL);
         when(session.getGroups())
                 .thenReturn(new ArrayList<>());
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
 
@@ -367,8 +387,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getGroups())
                 .thenReturn(sessionGroups);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
         when(accessMapping.getDigitalPublishingTeam())
@@ -393,8 +411,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getEmail())
                 .thenReturn(EMAIL);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
         when(accessMapping.getDigitalPublishingTeam())
@@ -414,8 +430,6 @@ public class PermissionsServiceImplTest {
 
         when(session.getEmail())
                 .thenReturn(EMAIL);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
         when(accessMapping.getDigitalPublishingTeam())
@@ -442,8 +456,6 @@ public class PermissionsServiceImplTest {
                 .thenReturn(EMAIL);
         when(session.getGroups())
                 .thenReturn(sessionGroups);
-        when(permissionsStore.getAccessMapping())
-                .thenReturn(accessMapping);
         when(accessMapping.getAdministrators())
                 .thenReturn(admins);
         when(accessMapping.getDigitalPublishingTeam())
